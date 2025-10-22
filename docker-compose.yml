@@ -1,0 +1,18 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    container_name: talkabout_db
+    environment:
+      - POSTGRES_USER=talkabout_user
+      - POSTGRES_PASSWORD=talkabout_password
+      - POSTGRES_DB=talkabout_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+
+volumes:
+  postgres_data:
