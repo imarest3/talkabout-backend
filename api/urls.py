@@ -16,4 +16,5 @@ router.register(r'enrollments', views.EnrollmentViewSet, basename='enrollment')
 # Las URLs de la API son generadas automáticamente por el router
 urlpatterns = [
     path('', include(router.urls)),
+    path('auth/login/', views.EdxLoginView.as_view(), name='edx_login'),
 ]
