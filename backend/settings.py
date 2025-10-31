@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     # apps de terceros
     "rest_framework",
     "rest_framework_simplejwt",
-
+    "django_cron",
+    
     # Mis apps
     "api",
 ]
@@ -141,6 +142,10 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ),
 }
+
+CRON_CLASSES = [
+    'api.cron.SendReminderCronJob', # Ruta a nuestra clase
+]
 
 # --- CONFIGURACIÓN DE EMAIL ---
 EMAIL_BACKEND = "sendgrid_backend.SendgridBackend"
