@@ -91,8 +91,8 @@ class WaitingRoomConsumer(AsyncWebsocketConsumer):
         enrollments = await self.get_enrollments()
 
         # 3. Lógica de agrupación
-        # Esta es la lógica que pediste: (ej. 5 usuarios, max 4 -> grupos de 3 y 2)
-        # ¡Esta lógica es compleja! Empecemos con algo simple:
+        # Esta es la lógica que se pidió: (ej. 5 usuarios, max 4 -> grupos de 3 y 2)
+        # Esta lógica es compleja Empecemos con algo simple:
         # TODO: Implementar la lógica de agrupación compleja.
 
         # Por ahora, solo creamos UNA sala de Jitsi para todos

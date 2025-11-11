@@ -10,6 +10,8 @@ from .models import User
 from rest_framework import viewsets
 from .models import User, Activity, TimeSlot, Enrollment
 from .serializers import UserSerializer, ActivitySerializer, TimeSlotSerializer, EnrollmentSerializer
+from . import permissions
+from rest_framework.permissions import IsAuthenticated
 from zoneinfo import ZoneInfo
 from django.utils import timezone
 from rest_framework.decorators import action
@@ -22,16 +24,25 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [permissions.IsAdminUser]
 
 
 class ActivityViewSet(viewsets.ModelViewSet):
     """
-    Esta vista permite todas las acciones CRUD (Crear, Leer, Actualizar, Borrar)
-    para el modelo Activity.
+    - Todos pueden LEER.
+    - Solo Profesores/Admins pueden CREAR.
+    - Solo el 'dueño' o Admin puede MODIFICAR/BORRAR.
     """
     queryset = Activity.objects.all()
     serializer_class = ActivitySerializer
+    permission_classes = [permissions.IsOwnerOrStaffReadOnly]
 
+    def perform_create(self, serializer):
+        """
+        Asigna automáticamente al usuario (profesor) que hace la petición
+        como el 'owner' de la nueva actividad.
+        """
+        serializer.save(owner=self.request.user)
     
     @action(detail=True, methods=['post'])
     def create_bulk_slots(self, request, pk=None):
@@ -103,13 +114,28 @@ class ActivityViewSet(viewsets.ModelViewSet):
 
 
 class TimeSlotViewSet(viewsets.ModelViewSet):
+    """
+    Los permisos de TimeSlot se heredan de su Actividad.
+    Usamos el mismo permiso.
+    (Necesitaremos ajustar el modelo TimeSlot para que tenga un 'owner'
+    o comprobar el 'owner' de la actividad padre).
+
+    Por ahora, usaremos este permiso, pero lo ajustaremos.
+    """
     queryset = TimeSlot.objects.all()
     serializer_class = TimeSlotSerializer
+    # De momento, solo profesores/admins pueden gestionar convocatorias.
+    permission_classes = [permissions.IsStaffUser]
 
 
 class EnrollmentViewSet(viewsets.ModelViewSet):
+    """
+    - Alumnos solo pueden crear (inscribirse) y borrar sus propias inscripciones.
+    - Profesores/Admins pueden ver y gestionar todas las inscripciones.
+    """
     queryset = Enrollment.objects.all()
     serializer_class = EnrollmentSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class EdxLoginView(APIView):

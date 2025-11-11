@@ -2,6 +2,7 @@
 
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 
 # -------------------------------------------------
 # MODELO 1: USUARIO PERSONALIZADO
@@ -22,6 +23,11 @@ class User(AbstractUser):
 # -------------------------------------------------
 # Almacena la información general de una actividad.
 class Activity(models.Model):
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE,
+        related_name='activities'
+    )
     title = models.CharField(max_length=200)
     description = models.TextField(help_text="Descripción en formato HTML.")
     max_participants = models.PositiveIntegerField(default=10)
